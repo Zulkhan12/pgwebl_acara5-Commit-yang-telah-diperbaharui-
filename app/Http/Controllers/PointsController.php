@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 
 class PointsController extends Controller
 {
+    protected $points;
+
     public function __construct()
     {
         $this->points = new PointsModel();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -18,6 +21,7 @@ class PointsController extends Controller
     {
         $data = [
             'title' => 'Map',
+            'points' => $this->points->all(), // Menampilkan semua titik
         ];
         return view('map', $data);
     }
@@ -35,19 +39,35 @@ class PointsController extends Controller
      */
     public function store(Request $request)
     {
+        // validate request
+        $request->validate(
+            [
+                'name' => 'required|unique:points,name',
+                'description'=> 'required',
+                'geom_point'=> 'required',
+            ],
+            [
+                'name.required' => 'Name is required',
+                'name.unique' => 'Name already exists',
+
+                'description.required' => 'Description is required',
+                'geom_point.required' => 'Geometry is required',
+            ]
+        );
+
         $data = [
             'geom' => $request->geom_point,
             'name' => $request->name,
             'description' => $request->description,
         ];
 
-        dd ($data);
+        // Buat data dan cek keberhasilan
+        if (!$this->points->create($data)) {
+            return redirect()->route('map')->with('error', 'Point failed to be added');
+        }
 
-        //Insert data
-        $this->points->create($data);
-
-        //Redirect to Map
-        return redirect()->route('map');
+        // Redirect ke halaman peta
+        return redirect()->route('map')->with('success', 'Point has been added');
     }
 
     /**
@@ -79,6 +99,6 @@ class PointsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+       
     }
 }
