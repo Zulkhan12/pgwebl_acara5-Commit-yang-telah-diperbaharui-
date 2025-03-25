@@ -180,29 +180,94 @@
             // console.log(objectGeometry);
 
             // Memunculkan modal create polyline
-    if (type === 'polyline') {
-        console.log("Create " + type);
-        $('#geom_polyline').val(objectGeometry);
-        $('#CreatePolylineModal').modal('show');
+            if (type === 'polyline') {
+                console.log("Create " + type);
+                $('#geom_polyline').val(objectGeometry);
+                $('#CreatePolylineModal').modal('show');
 
-    // Memunculkan modal create polygon atau rectangle
-    } else if (type === 'polygon' || type === 'rectangle') {
-        console.log("Create " + type);
-        $('#geom_polygon').val(objectGeometry); // Memasukkan geometry ke geom_polygon
-        $('#CreatePolygonModal').modal('show');
+                // Memunculkan modal create polygon atau rectangle
+            } else if (type === 'polygon' || type === 'rectangle') {
+                console.log("Create " + type);
+                $('#geom_polygon').val(objectGeometry); // Memasukkan geometry ke geom_polygon
+                $('#CreatePolygonModal').modal('show');
 
-    // Memunculkan modal create marker
-    } else if (type === 'marker') {
-        console.log("Create " + type);
-        $('#geom_point').val(objectGeometry); // Memasukkan geometry ke geom_point
-        $('#CreatePointModal').modal('show');
+                // Memunculkan modal create marker
+            } else if (type === 'marker') {
+                console.log("Create " + type);
+                $('#geom_point').val(objectGeometry); // Memasukkan geometry ke geom_point
+                $('#CreatePointModal').modal('show');
 
-    } else {
-        console.log('undefined');
+            } else {
+                console.log('undefined');
+            }
+
+            // Menambahkan layer ke drawnItems
+            drawnItems.addLayer(layer);
+        });
+// GeoJSON Points
+var pointsLayer = L.geoJson(null, {
+    onEachFeature: function(feature, layer) {
+        var popupContent = "Nama: " + feature.properties.name + "<br>" +
+            "Deskripsi: " + feature.properties.description + "<br>" +
+            "Dibuat: " + feature.properties.created_at;
+        layer.on({
+            click: function(e) {
+                layer.bindPopup(popupContent).openPopup();
+            },
+            mouseover: function(e) {
+                layer.bindTooltip(feature.properties.name).openTooltip();
+            }
+        });
     }
-
-    // Menambahkan layer ke drawnItems
-    drawnItems.addLayer(layer);
 });
+$.getJSON("{{ route('api.points') }}", function(data) {
+    pointsLayer.addData(data);
+    map.addLayer(pointsLayer);
+});
+
+// GeoJSON Polylines
+var polylinesLayer = L.geoJson(null, {
+    onEachFeature: function(feature, layer) {
+        var popupContent = "Nama: " + feature.properties.name + "<br>" +
+            "Deskripsi: " + feature.properties.description + "<br>" +
+            "Dibuat: " + feature.properties.created_at;
+        layer.on({
+            click: function(e) {
+                layer.bindPopup(popupContent).openPopup();
+            },
+            mouseover: function(e) {
+                layer.bindTooltip(feature.properties.name).openTooltip();
+            }
+        });
+    },
+    style: { color: "blue", weight: 3 } // Atur warna dan ketebalan garis
+});
+$.getJSON("{{route('api.polylines')}}", function(data) {
+    polylinesLayer.addData(data);
+    map.addLayer(polylinesLayer);
+});
+
+// GeoJSON Polygons
+var polygonsLayer = L.geoJson(null, {
+    onEachFeature: function(feature, layer) {
+        var popupContent = "Nama: " + feature.properties.name + "<br>" +
+            "Deskripsi: " + feature.properties.description + "<br>" +
+            "Dibuat: " + feature.properties.created_at;
+        layer.on({
+            click: function(e) {
+                layer.bindPopup(popupContent).openPopup();
+            },
+            mouseover: function(e) {
+                layer.bindTooltip(feature.properties.name).openTooltip();
+            }
+        });
+    },
+    style: { color: "red", fillColor: "orange", fillOpacity: 0.5 } // Atur warna dan transparansi
+});
+$.getJSON("{{route('api.polygons')}}", function(data) {
+    polygonsLayer.addData(data);
+    map.addLayer(polygonsLayer);
+});
+
     </script>
 @endsection
