@@ -15,6 +15,9 @@ class PointsModel extends Model
         'geom',
         'name',
         'description',
+        'image',
+        'created_at',
+        'updated_at',
     ];
 
     public function gejson_points()
@@ -24,6 +27,7 @@ class PointsModel extends Model
         st_asgeojson(geom) AS geom,
         name,
         description,
+        image,
         created_at,
         updated_at'))
             ->get();
@@ -43,6 +47,7 @@ class PointsModel extends Model
                     'description' => $point->description,
                     'created_at' => $point->created_at,
                     'updated_at' => $point->updated_at,
+                    'image' => $point->image,
                 ],
             ];
 

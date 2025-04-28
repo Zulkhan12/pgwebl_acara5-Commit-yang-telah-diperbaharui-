@@ -15,6 +15,9 @@ class PolygonsModel extends Model
         'geom',
         'name',
         'description',
+        'image',
+        'created_at',
+        'updated_at',
     ];
 
     public function gejson_polygons()
@@ -27,6 +30,7 @@ class PolygonsModel extends Model
         ST_Area(geom, TRUE) / 10000 AS luas_hektar,
         name,
         description,
+        image,
         created_at,
         updated_at
     "))->get();
@@ -44,6 +48,7 @@ class PolygonsModel extends Model
                     'id' => $p->id,
                     'name' => $p->name,
                     'description' => $p->description,
+                    'image' => $p->image,
                     'area_m2' => $p->luas_m2,
                     'area_km2' => $p->luas_km2,
                     'area_hektar' => $p->luas_hektar,
