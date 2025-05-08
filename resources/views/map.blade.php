@@ -95,7 +95,8 @@
                         <label for="image" class="form-label">Photo</label>
                         <input type="file" class="form-control" id="image_polyline" name="image"
                             onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
-                        <img src="" alt="" id="preview-image-polyline" class="img-thumbnail" width="400">
+                        <img src="" alt="" id="preview-image-polyline" class="img-thumbnail"
+                            width="400">
                     </div>
 
                     <div class="modal-footer">
@@ -141,7 +142,8 @@
                         <label for="image" class="form-label">Photo</label>
                         <input type="file" class="form-control" id="image_polygon" name="image"
                             onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
-                        <img src="" alt="" id="preview-image-polygon" class="img-thumbnail" width="400">
+                        <img src="" alt="" id="preview-image-polygon" class="img-thumbnail"
+                            width="400">
                     </div>
 
                     <div class="modal-footer">
@@ -228,62 +230,57 @@
             drawnItems.addLayer(layer);
         });
 
-// GeoJSON Points
-var pointsLayer = L.geoJson(null, {
-    onEachFeature: function(feature, layer) {
-        var popupContent = `
-            <table style="border-collapse: collapse; width: 100%; text-align: left; border: 1px solid black;">
-                <thead>
-                    <tr style="background-color: #FF2D20; color: white;">
-                        <th style="padding: 5px; border: 1px solid black;" colspan="2">Informasi Titik</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="padding: 5px; border: 1px solid black;"><b>Nama</b></td>
-                        <td style="padding: 5px; border: 1px solid black;">${feature.properties.name}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 5px; border: 1px solid black;"><b>Deskripsi</b></td>
-                        <td style="padding: 5px; border: 1px solid black;">${feature.properties.description}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 5px; border: 1px solid black;"><b>Dibuat</b></td>
-                        <td style="padding: 5px; border: 1px solid black;">${feature.properties.created_at}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 5px; border: 1px solid black;"><b>Gambar</b></td>
-                        <td style="padding: 5px; border: 1px solid black;">
-                            <img src="/storage/images/${feature.properties.image}" width="200" alt="Gambar"/>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
+        // GeoJSON Points
+        var pointsLayer = L.geoJson(null, {
+            onEachFeature: function(feature, layer) {
 
-        layer.on({
-            click: function(e) {
-                layer.bindPopup(popupContent).openPopup();
-            },
-            mouseover: function(e) {
-                layer.bindTooltip(feature.properties.name).openTooltip();
+                var routedelete = "{{ route('points.destroy', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
+                var popupContent =
+                    "Nama: " + feature.properties.name + "<br>" +
+                    "Deskripsi: " + feature.properties.description + "<br>" +
+                    "Dibuat: " + feature.properties.created_at + "<br>" +
+                    "<img src='/storage/images/" + feature.properties.image +
+                    "' width='200' alt='Gambar'/<br>" +
+                    "<form method='POST' action='" + routedelete + "'>" +
+                    '@csrf' + '@method('DELETE')' +
+                    "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Apakah Anda yakin ingin menghapus data ini?\")'><i class='fa-solid fa-trash-can'></i></button>" +
+                    "</form>";
+
+                layer.on({
+                    click: function(e) {
+                        layer.bindPopup(popupContent).openPopup();
+                    },
+                    mouseover: function(e) {
+                        layer.bindTooltip(feature.properties.name).openTooltip();
+                    }
+                });
             }
         });
-    }
-});
 
-$.getJSON("{{ route('api.points') }}", function(data) {
-    pointsLayer.addData(data);
-    map.addLayer(pointsLayer);
-});
+        $.getJSON("{{ route('api.points') }}", function(data) {
+            pointsLayer.addData(data);
+            map.addLayer(pointsLayer);
+        });
 
         // GeoJSON Polylines
         var polylinesLayer = L.geoJson(null, {
             onEachFeature: function(feature, layer) {
+
+                var routedelete = "{{ route('polylines.destroy', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
-                    "<img src='/storage/images/" + feature.properties.image + "' width='200' alt='Gambar'/>";
+                    "<img src='/storage/images/" + feature.properties.image + "' width='200' alt='Gambar'/>" +
+                    "<form method='POST' action='" + routedelete + "'>" +
+                        '@csrf' + '@method('DELETE')' +
+                        "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Apakah Anda yakin ingin menghapus garis ini?\")'><i class='fa-solid fa-trash-can'></i></button>" +
+                        "</form>";
+
+
                 layer.on({
                     click: function(e) {
                         layer.bindPopup(popupContent).openPopup();
@@ -306,10 +303,18 @@ $.getJSON("{{ route('api.points') }}", function(data) {
         // GeoJSON Polygons
         var polygonsLayer = L.geoJson(null, {
             onEachFeature: function(feature, layer) {
+
+                var routedelete = "{{ route('polygons.destroy', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
                 var popupContent = "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
-                    "<img src='/storage/images/" + feature.properties.image + "' width='200' alt='Gambar'/>";
+                    "<img src='/storage/images/" + feature.properties.image + "' width='200' alt='Gambar'/>"
+                    + "<form method='POST' action='" + routedelete + "'>" +
+                        '@csrf' + '@method('DELETE')' +
+                        "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Apakah Anda yakin ingin menghapus polygon ini?\")'><i class='fa-solid fa-trash-can'></i></button>" +
+                        "</form>";
 
                 layer.on({
                     click: function(e) {

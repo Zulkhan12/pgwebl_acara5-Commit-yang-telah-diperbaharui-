@@ -111,6 +111,19 @@ class PolygonsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $imagafile = $this->polygons->findOrFail($id);
+        if ($imagafile->image) {
+            $file_path = public_path('storage/images/' . $imagafile->image);
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+        }
+        if (!$this->polygons->destroy($id)) {
+            return redirect()->route('polygons.index')->with('error', 'Polygon failed to be deleted');
+        }
+        // Redirect ke halaman peta
+        return redirect()->route('polygons.index')->with('success', 'Polygon has been deleted');
+        // Redirect ke halaman peta
+            return redirect()->route('map')->with('success', 'Polygon has been deleted');
     }
 }

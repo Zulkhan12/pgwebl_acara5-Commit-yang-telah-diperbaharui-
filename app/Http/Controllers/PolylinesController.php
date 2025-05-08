@@ -121,9 +121,20 @@ class PolylinesController extends Controller
      */
     public function destroy($id)
     {
-        $polyline = $this->polylines->findOrFail($id);
-        $polyline->delete();
+        $imagefile = $this->polylines->find($id)->image;
 
-        return redirect()->route('polylines.index')->with('success', 'Polyline deleted successfully');
+        if (!$this->polylines->destroy($id)) {
+            return redirect()->route('polylines.index')->with('error', 'Polyline failed to be deleted');
+        }
+
+        // Delete image file
+        if ($imagefile != null) {
+            if (file_exists('storage/images/' . $imagefile)) {
+                unlink('storage/images/' . $imagefile);
+            }
+        }
+
+        // Redirect ke halaman peta
+        return redirect()->route('polylines.index')->with('success', 'Polyline has been deleted');
     }
 }
