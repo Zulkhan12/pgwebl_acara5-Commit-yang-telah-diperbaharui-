@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\PointsModel;
+use App\Models\PolylinesModel;
+use App\Models\PolygonsModel;
 
 class TableController extends Controller
 {
     public function index()
     {
         $data = [
-        'title' => 'Table',
-    ];
-        return view ('table', $data);
-}
-
+            'title' => 'Table',
+            'points' => PointsModel::all(),
+            'polylines' => PolylinesModel::all(),
+            'polygons' => PolygonsModel::all(),
+        ];
+        return view('table', $data);
+    }
 }

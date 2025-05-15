@@ -101,23 +101,60 @@ class PolylinesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'geom_polyline' => 'required',
-        ]);
+ public function update(Request $request, string $id)
+{
+    // validate request
+    $request->validate([
+        'name' => 'required|unique:polylines,name,' . $id,
+        'description' => 'required',
+        'geom_polyline' => 'required',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ], [
+        'name.required' => 'Name is required',
+        'name.unique' => 'Name already exists',
+        'description.required' => 'Description is required',
+        'geom_polyline.required' => 'Geometry is required',
+    ]);
 
-        $polyline = $this->polylines->findOrFail($id);
-        $polyline->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'geom' => $request->geom_polyline,
-        ]);
-
-        return redirect()->route('polylines.index')->with('success', 'Polyline updated successfully');
+    // Create images directory if not exists
+    if (!is_dir('storage/images')) {
+        mkdir('./storage/images', 0777);
     }
+
+    // Get old image file name
+    $old_image = $this->polylines->find($id)->image;
+
+    // Get image file
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $name_image = time() . "_polylines." . strtolower($image->getClientOriginalExtension());
+        $image->move('storage/images', $name_image);
+
+        // Delete old image file if exists
+        if ($old_image != null && file_exists('storage/images/' . $old_image)) {
+            unlink('storage/images/' . $old_image);
+        }
+    } else {
+        $name_image = $old_image;
+    }
+
+    // Prepare data for update
+    $data = [
+        'geom' => $request->geom_polyline, // ✅ perbaikan ada di sini
+        'name' => $request->name,
+        'description' => $request->description,
+        'image' => $name_image,
+    ];
+
+    // Update and check success
+    if (!$this->polylines->find($id)->update($data)) {
+        return redirect()->route('polylines.index')->with('error', 'Polyline failed to be updated');
+    }
+
+    return redirect()->route('polylines.index')->with('success', 'Polyline has been updated');
+}
+
+
 
     /**
      * Remove the specified resource from storage.

@@ -10,14 +10,9 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active d-flex align-items-center" aria-current="page" href="#">
-                        <i class="fa-solid fa-house me-2"></i> Home
-                    </a>
-                </li>
 
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center" href="{{ route('table')}}">
+                    <a class="nav-link d-flex align-items-center" href="{{ route('table')}}" target="_blank">
                         <i class="fa-solid fa-table me-2"></i> Table
                     </a>
                 </li>
@@ -30,25 +25,17 @@
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
+                        <i class="fa-solid fa-database"></i>
+                        Data
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li><a class="dropdown-item" href="{{ route("api.points")}}" target="_blank"><i class="fa-solid fa-location-dot"></i> Points</a></li>
+                        <li><a class="dropdown-item" href="{{ route("api.polylines")}}" target="_blank"><i class="fa-brands fa-line"></i> Polylines</a></li>
+                        <li><a class="dropdown-item" href="{{ route("api.polygons")}}" target="_blank"><i class="fa-solid fa-skull-crossbones"></i> Polygon</a></li>
                     </ul>
-                </li>
 
-                <li class="nav-item">
-                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                 </li>
             </ul>
-
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
         </div>
     </div>
 </nav>

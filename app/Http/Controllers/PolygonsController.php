@@ -107,7 +107,58 @@ class PolygonsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate(
+        [
+            'name' => 'required|unique:polygons,name,' . $id,
+            'description'=> 'required',
+            'geom_polygon'=> 'required',
+        ],
+        [
+            'name.required' => 'Name is required',
+            'name.unique' => 'Name already exists',
+            'description.required' => 'Description is required',
+            'geom_polygon.required' => 'Geometry is required',
+        ]
+    );
+
+    // Buat folder jika belum ada
+    if (!is_dir('storage/images')) {
+        mkdir('./storage/images', 0777);
+    }
+
+    // Get Old image
+    $old_image = $this->polygons->find($id)->image;
+
+    // Cek file gambar
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $name_image = time() . "_polygons." . strtolower($image->getClientOriginalExtension());
+        $image->move('storage/images', $name_image);
+
+        //delete old image
+        if ($old_image !=null){
+            if (file_exists('storage/images/' . $old_image)) {
+                unlink('storage/images/' . $old_image);
+            }
+        }
+    } else {
+        $name_image = $old_image;
+    }
+
+    $data = [
+        'geom' => $request->geom_polygon,
+        'name' => $request->name,
+        'description' => $request->description,
+        'image' => $name_image,
+    ];
+
+    // Cari data berdasarkan ID, lalu update
+    $polygon = $this->polygons->findOrFail($id);
+    if (!$polygon->update($data)) {
+        return redirect()->route('polygons.index')->with('error', 'Polygon failed to be updated');
+    }
+
+    return redirect()->route('polygons.index')->with('success', 'Polygon has been updated');
     }
 
     /**

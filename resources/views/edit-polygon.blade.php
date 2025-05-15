@@ -25,9 +25,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form method="POST" action="{{ route('polygons.store') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('polygons.update', $id) }}" enctype="multipart/form-data">
                     <div class="modal-body">
                         @csrf
+                        @method('PATCH')
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
@@ -44,13 +45,13 @@
                             <label for="geom_polygon" class="form-label">Geometry</label>
                             <textarea class="form-control" id="geom_polygon" name="geom_polygon" rows="3"></textarea>
                         </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Photo</label>
-                        <input type="file" class="form-control" id="image_polygon" name="image"
-                            onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
-                        <img src="" alt="" id="preview-image-polygon" class="img-thumbnail" width="400">
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="image_polygon" name="image"
+                                onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-polygon" class="img-thumbnail"
+                                width="400">
+                        </div>
                     </div>
 
                     <div class="modal-footer">
@@ -116,7 +117,8 @@
                 $('#name').val(properties.name);
                 $('#description').val(properties.description);
                 $('#geom_polygon').val(objectGeometry);
-                $('#preview-image-polygon').attr('src', "{{ asset('storage/images') }}/" + properties.image);
+                $('#preview-image-polygon').attr('src', "{{ asset('storage/images') }}/" + properties
+                .image);
                 // menampilkan modal edit
                 $('#editPolygonModal').modal('show');
             });

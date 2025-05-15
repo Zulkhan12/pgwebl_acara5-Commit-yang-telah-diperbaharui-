@@ -23,13 +23,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form method="POST" action="{{ route('polylines.store') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('polylines.update', $id) }}" enctype="multipart/form-data">
                     <div class="modal-body">
                         @csrf
+                        @method('PATCH')
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Fill polyline name">
+                            <input type="text" class="form-control" id="name" name="name"
+                                placeholder="Fill polyline name">
                         </div>
 
                         <div class="mb-3">
@@ -41,15 +43,14 @@
                             <label for="geom_polyline" class="form-label">Geometry</label>
                             <textarea class="form-control" id="geom_polyline" name="geom_polyline" rows="3"></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="image_polyline" name="image"
+                                onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-polyline" class="img-thumbnail"
+                                width="400">
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Photo</label>
-                        <input type="file" class="form-control" id="image_polyline" name="image"
-                            onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
-                        <img src="" alt="" id="preview-image-polyline" class="img-thumbnail" width="400">
-                    </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Save</button>
@@ -100,7 +101,8 @@
                 $('#name').val(properties.name);
                 $('#description').val(properties.description);
                 $('#geom_polyline').val(objectGeometry);
-                $('#preview-image-polyline').attr('src', "{{ asset('storage/images') }}/" + properties.image);
+                $('#preview-image-polyline').attr('src', "{{ asset('storage/images') }}/" + properties
+                    .image);
                 $('#EditPolylineModal').modal('show');
             });
         });
@@ -118,7 +120,8 @@
                         $('#name').val(properties.name);
                         $('#description').val(properties.description);
                         $('#geom_polyline').val(objectGeometry);
-                        $('#preview-image-polyline').attr('src', "{{ asset('storage/images') }}/" + properties.image);
+                        $('#preview-image-polyline').attr('src', "{{ asset('storage/images') }}/" +
+                            properties.image);
                         $('#EditPolylineModal').modal('show');
                     }
                 });
@@ -128,7 +131,9 @@
         $.getJSON("{{ route('api.polyline', $id) }}", function(data) {
             polylineLayer.addData(data);
             map.addLayer(polylineLayer);
-            map.fitBounds(polylineLayer.getBounds(), { padding: [100, 100] });
+            map.fitBounds(polylineLayer.getBounds(), {
+                padding: [100, 100]
+            });
         });
     </script>
 @endsection
