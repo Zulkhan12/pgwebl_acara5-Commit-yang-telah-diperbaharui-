@@ -44,14 +44,17 @@
                             <label for="geom_point" class="form-label">Geometry</label>
                             <textarea class="form-control" id="geom_point" name="geom_point" rows="3"></textarea>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="image_point" name="image"
+                                onchange="document.getElementById('preview-image-point').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-point" class="img-thumbnail"
+                                width="400">
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Photo</label>
-                        <input type="file" class="form-control" id="image_point" name="image"
-                            onchange="document.getElementById('preview-image-point').src = window.URL.createObjectURL(this.files[0])">
-                        <img src="" alt="" id="preview-image-point" class="img-thumbnail" width="400">
-                    </div>
+
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -90,14 +93,16 @@
                             <label for="geom_polyline" class="form-label">Geometry</label>
                             <textarea class="form-control" id="geom_polyline" name="geom_polyline" rows="3"></textarea>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="image_polyline" name="image"
+                                onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-polyline" class="img-thumbnail"
+                                width="400">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Photo</label>
-                        <input type="file" class="form-control" id="image_polyline" name="image"
-                            onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
-                        <img src="" alt="" id="preview-image-polyline" class="img-thumbnail"
-                            width="400">
-                    </div>
+
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -137,15 +142,14 @@
                             <label for="geom_polygon" class="form-label">Geometry</label>
                             <textarea class="form-control" id="geom_polygon" name="geom_polygon" rows="3"></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="image_polygon" name="image"
+                                onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
+                            <img src="" alt="" id="preview-image-polygon" class="img-thumbnail"
+                                width="400">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="image" class="form-label">Photo</label>
-                        <input type="file" class="form-control" id="image_polygon" name="image"
-                            onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
-                        <img src="" alt="" id="preview-image-polygon" class="img-thumbnail"
-                            width="400">
-                    </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Save</button>
@@ -237,16 +241,29 @@
                 var routedelete = "{{ route('points.destroy', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
+                var routeedit = "{{ route('points.edit', ':id') }}";
+                routeedit = routeedit.replace(':id', feature.properties.id);
+
                 var popupContent =
                     "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
                     "<img src='/storage/images/" + feature.properties.image +
-                    "' width='200' alt='Gambar'/<br>" +
-                    "<form method='POST' action='" + routedelete + "'>" +
-                    '@csrf' + '@method('DELETE')' +
-                    "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Apakah Anda yakin ingin menghapus data ini?\")'><i class='fa-solid fa-trash-can'></i></button>" +
-                    "</form>";
+                    "' width='250' alt='Gambar'><br>" +
+                    "<div class='mt-3 d-flex justify-content-between gap-2'>" +
+                    "<a href='" + routeedit + "' class='btn btn-warning btn-sm'>" +
+                    "<i class='fa-solid fa-pen-to-square'></i> Edit" +
+                    "</a>" +
+                    "<form method='POST' action='" + routedelete +
+                    "' onsubmit='return confirm(\"Apakah Anda yakin ingin menghapus data ini?\")'>" +
+                    "<input type='hidden' name='_token' value='{{ csrf_token() }}'>" +
+                    "<input type='hidden' name='_method' value='DELETE'>" +
+                    "<button type='submit' class='btn btn-danger btn-sm'>" +
+                    "<i class='fa-solid fa-trash-can'></i> Hapus" +
+                    "</button>" +
+                    "</form>" +
+                    "</div>";
+
 
                 layer.on({
                     click: function(e) {
@@ -271,14 +288,28 @@
                 var routedelete = "{{ route('polylines.destroy', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
-                var popupContent = "Nama: " + feature.properties.name + "<br>" +
+                var routeedit = "{{ route('polylines.edit', ':id') }}";
+                routeedit = routeedit.replace(':id', feature.properties.id);
+
+                var popupContent =
+                    "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
                     "<img src='/storage/images/" + feature.properties.image + "' width='200' alt='Gambar'/>" +
-                    "<form method='POST' action='" + routedelete + "'>" +
-                        '@csrf' + '@method('DELETE')' +
-                        "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Apakah Anda yakin ingin menghapus garis ini?\")'><i class='fa-solid fa-trash-can'></i></button>" +
-                        "</form>";
+                    "<div class='d-flex justify-content-between mt-3 gap-2'>" +
+                    "<a href='" + routeedit + "' class='btn btn-warning btn-sm'>" +
+                    "<i class='fa-solid fa-pen-to-square'></i>" +
+                    "</a>" +
+                    "<form method='POST' action='" + routedelete +
+                    "' onsubmit='return confirm(\"Apakah Anda yakin ingin menghapus garis ini?\")'>" +
+                    "<input type='hidden' name='_token' value='{{ csrf_token() }}'>" +
+                    "<input type='hidden' name='_method' value='DELETE'>" +
+                    "<button type='submit' class='btn btn-sm btn-danger'>" +
+                    "<i class='fa-solid fa-trash-can'></i>" +
+                    "</button>" +
+                    "</form>" +
+                    "</div>";
+
 
 
                 layer.on({
@@ -307,14 +338,28 @@
                 var routedelete = "{{ route('polygons.destroy', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
-                var popupContent = "Nama: " + feature.properties.name + "<br>" +
+                var routeedit = "{{ route('polygons.edit', ':id') }}";
+                routeedit = routeedit.replace(':id', feature.properties.id);
+
+                var popupContent =
+                    "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
                     "Dibuat: " + feature.properties.created_at + "<br>" +
-                    "<img src='/storage/images/" + feature.properties.image + "' width='200' alt='Gambar'/>"
-                    + "<form method='POST' action='" + routedelete + "'>" +
-                        '@csrf' + '@method('DELETE')' +
-                        "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Apakah Anda yakin ingin menghapus polygon ini?\")'><i class='fa-solid fa-trash-can'></i></button>" +
-                        "</form>";
+                    "<img src='/storage/images/" + feature.properties.image + "' width='200' alt='Gambar'/>" +
+                    "<div class='d-flex justify-content-between mt-3 gap-2'>" +
+                    "<a href='" + routeedit + "' class='btn btn-warning btn-sm'>" +
+                    "<i class='fa-solid fa-pen-to-square'></i>" +
+                    "</a>" +
+                    "<form method='POST' action='" + routedelete +
+                    "' onsubmit='return confirm(\"Apakah Anda yakin ingin menghapus polygon ini?\")'>" +
+                    "<input type='hidden' name='_token' value='{{ csrf_token() }}'>" +
+                    "<input type='hidden' name='_method' value='DELETE'>" +
+                    "<button type='submit' class='btn btn-sm btn-danger'>" +
+                    "<i class='fa-solid fa-trash-can'></i>" +
+                    "</button>" +
+                    "</form>" +
+                    "</div>";
+
 
                 layer.on({
                     click: function(e) {

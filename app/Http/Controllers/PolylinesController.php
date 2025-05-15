@@ -91,8 +91,11 @@ class PolylinesController extends Controller
      */
     public function edit($id)
     {
-        $polyline = $this->polylines->findOrFail($id);
-        return view('polylines.edit', compact('polyline'));
+        $data = [
+            'title' => 'Edit Polyline',
+            'id' => $id,
+        ];
+        return view('edit-polyline', $data);
     }
 
     /**
